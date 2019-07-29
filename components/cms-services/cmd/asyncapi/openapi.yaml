@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  description: The purpose of this application is to provide an API to process AsyncAPI specification
+  title: CMS AsyncAPI Service API
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: 0.0.1
+paths:
+  /validate:
+    post:
+      description: Validates file sent in `multipart/form-data` form against AsyncAPI schema in version 2.0.
+      tags:
+        - validate
+      summary: Validates AsyncAPI specification against AsyncAPI schema in version 2.0.
+      operationId: validateReq
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                metadata:
+                  description: Additional metadata
+                  type: string
+                content:
+                  description: File to validate
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          $ref: "#/components/responses/successResponse"
+        "400":
+          $ref: "#/components/responses/badRequestResponse"
+        "405":
+          $ref: "#/components/responses/methodNotAllowedResponse"
+        "422":
+          $ref: "#/components/responses/unprocessableEntity"
+        "500":
+          $ref: "#/components/responses/internalServerErrorResponse"
+servers:
+  - url: http://localhost:3000/v1
+components:
+  responses:
+    badRequestResponse:
+      description: Bad request response
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Invalid format
+    methodNotAllowedResponse:
+      description: Bad request response
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Invalid request method
+    unprocessableEntity:
+      description: Unprocessable entities. File validation failed.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Invalid property
+    internalServerErrorResponse:
+      description: Internal server error response
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Internal server error
+    successResponse:
+      description: Success response

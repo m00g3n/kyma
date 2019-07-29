@@ -10,30 +10,30 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type validationEndpoint struct {
-	name      string
-	validator Validator
+type mutationEndpoint struct {
+	name    string
+	mutator Mutator
 }
 
-//go:generate mockery -name=Validator -output=automock -outpkg=automock -case=underscore
-type Validator interface {
-	Validate(ctx context.Context, contentType string, reader io.Reader, metadata string) error
+//go:generate mockery -name=Mutator -output=automock -outpkg=automock -case=underscore
+type Mutator interface {
+	Mutate(ctx context.Context, contentType string, reader io.Reader, metadata string) ([]byte, error)
 }
 
-var _ service.HttpEndpoint = &validationEndpoint{}
+var _ service.HttpEndpoint = &mutationEndpoint{}
 
-func NewValidation(name string, validator Validator) *validationEndpoint {
-	return &validationEndpoint{
-		name:      name,
-		validator: validator,
+func NewMutation(name string, mutator Mutator) *mutationEndpoint {
+	return &mutationEndpoint{
+		name:    name,
+		mutator: mutator,
 	}
 }
 
-func (e *validationEndpoint) Name() string {
+func (e *mutationEndpoint) Name() string {
 	return e.name
 }
 
-func (e *validationEndpoint) Handle(writer http.ResponseWriter, request *http.Request) {
+func (e *mutationEndpoint) Handle(writer http.ResponseWriter, request *http.Request) {
 	defer request.Body.Close()
 
 	if request.Method != http.MethodPost {
@@ -58,11 +58,13 @@ func (e *validationEndpoint) Handle(writer http.ResponseWriter, request *http.Re
 
 	metadata := request.FormValue("metadata")
 
-	if err := e.validator.Validate(request.Context(), header.Header.Get("Content-Type"), content, metadata); err != nil {
-		log.Error(errors.Wrap(err, "while validating request"))
+	result, err := e.mutator.Mutate(request.Context(), header.Header.Get("content-type"), content, metadata)
+	if err != nil {
+		log.Error(errors.Wrap(err, "while mutating request"))
 		http.Error(writer, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 
 	writer.WriteHeader(http.StatusOK)
+	writer.Write(result)
 }

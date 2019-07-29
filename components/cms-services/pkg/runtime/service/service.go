@@ -3,9 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"net/http"
-
 	log "github.com/sirupsen/logrus"
+	"net/http"
 )
 
 type Config struct {
@@ -13,11 +12,13 @@ type Config struct {
 	Port int    `envconfig:"default=3000"`
 }
 
+//go:generate mockery -name=Service -output=automock -outpkg=automock -case=underscore
 type Service interface {
 	Register(endpoint HttpEndpoint)
 	Start(ctx context.Context) error
 }
 
+//go:generate mockery -name=HttpEndpoint -output=automock -outpkg=automock -case=underscore
 type HttpEndpoint interface {
 	Name() string
 	Handle(writer http.ResponseWriter, request *http.Request)
@@ -38,7 +39,7 @@ func New(config Config) *service {
 	}
 }
 
-func (s *service) Start(ctx context.Context) error {
+func (s *service) setupHandlers() *http.ServeMux {
 	mux := http.NewServeMux()
 
 	for _, endpoint := range s.endpoints {
@@ -46,6 +47,12 @@ func (s *service) Start(ctx context.Context) error {
 		path := fmt.Sprintf("/%s", endpoint.Name())
 		mux.HandleFunc(path, endpoint.Handle)
 	}
+
+	return mux
+}
+
+func (s *service) Start(ctx context.Context) error {
+	mux := s.setupHandlers()
 
 	host := fmt.Sprintf("%s:%d", s.host, s.port)
 
