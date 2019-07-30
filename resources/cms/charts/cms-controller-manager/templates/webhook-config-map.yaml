@@ -16,7 +16,7 @@ data:
               "endpoint": "/v1/extract",
               "filter": "\\.md$"
           }
-      ]``
+      ]
     }
 {{- if .Values.global.cms_asyncapi_service.enabled }}
   asyncapi: |-
