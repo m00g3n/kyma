@@ -1,9 +1,7 @@
 package asyncapi_test
 
 import (
-	"bytes"
 	"context"
-	"mime/multipart"
 	"net/http"
 	"testing"
 
@@ -13,26 +11,53 @@ import (
 )
 
 func TestV1Validation(t *testing.T) {
+	// Given
 	g := gomega.NewWithT(t)
 
 	srv, err := initService()
 	g.Expect(err).ToNot(gomega.HaveOccurred())
 
-	response := serveValidate(srv, "")
-	g.Expect(response.StatusCode).To(gomega.Equal(http.StatusOK))
+	for testName, testCase := range map[string]struct {
+		filePath       string
+		expectedStatus int
+	}{
+		"valid yaml": {
+			filePath:       "./v1/testdata/valid.yaml",
+			expectedStatus: http.StatusOK,
+		},
+		"invalid yaml": {
+			filePath:       "./v1/testdata/invalid.yaml",
+			expectedStatus: http.StatusUnprocessableEntity,
+		},
+		"valid json": {
+			filePath:       "./v1/testdata/valid.json",
+			expectedStatus: http.StatusOK,
+		},
+		"invalid json": {
+			filePath:       "./v1/testdata/invalid.json",
+			expectedStatus: http.StatusUnprocessableEntity,
+		},
+	} {
+		t.Run(testName, func(t *testing.T) {
+			g := gomega.NewGomegaWithT(t)
+			// When
+			response, err := serveValidate(srv, testCase.filePath)
+
+			// Then
+			g.Expect(err).ToNot(gomega.HaveOccurred())
+			g.Expect(response.StatusCode).To(gomega.Equal(testCase.expectedStatus))
+		})
+	}
 }
 
-func serveValidate(srv *fake.Service, filePath string) *http.Response {
-	response := srv.ServeHTTP(http.MethodPost, "/v1/validate", "", nil)
+func serveValidate(srv *fake.Service, filePath string) (*http.Response, error) {
+	body, contentType, err := fake.RequestBodyFromFile(filePath, "")
+	if err != nil {
+		return nil, err
+	}
 
-	return response
-}
-
-func buildQuery(filePath string) {
-	var b bytes.Buffer
-	w := multipart.NewWriter(&b)
-
-	w.CreateFormFile("content", filePath)
+	response := srv.ServeHTTP(http.MethodPost, "/v1/validate", contentType, body)
+	return response, nil
 }
 
 func initService() (*fake.Service, error) {
