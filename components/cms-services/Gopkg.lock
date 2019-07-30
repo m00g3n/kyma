@@ -2,6 +2,20 @@
 
 
 [[projects]]
+  branch = "imports"
+  digest = "1:bfb172a34d663403968d39da257e16ae23d39f3bc60d7c05d2e318c7e091eb55"
+  name = "github.com/asyncapi/converter-go"
+  packages = [
+    "pkg/converter/v2",
+    "pkg/decode",
+    "pkg/encode",
+    "pkg/error",
+  ]
+  pruneopts = "UT"
+  revision = "322a48cf6b1a07aa9059662c94b82d4c8ae433db"
+  source = "github.com/m00g3n/converter-go"
+
+[[projects]]
   branch = "master"
   digest = "1:c1193322cef04f23e4c14e2d4e7bf2f9895deda5639df02b87084737f099dcd3"
   name = "github.com/asyncapi/parser"
@@ -140,9 +154,10 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a167b5c532f3245f5a147ade26185f16d6ee8f8d3f6c9846f447e9d8b9705505"
+  digest = "1:71a3e45347f39ad3b05480f73358ffbd1f842be417ecc37922776a6173972e0f"
   name = "golang.org/x/net"
   packages = [
+    "context",
     "html",
     "html/atom",
     "html/charset",
@@ -215,16 +230,28 @@
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
   version = "v2.2.2"
 
+[[projects]]
+  branch = "v3"
+  digest = "1:46754188622566b86271d7526cb643b88c2b9589ee224c2d55e282f0f35a0df8"
+  name = "gopkg.in/yaml.v3"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "674ba3eaed223079f9377fbb0c98c0951bf6ec10"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/asyncapi/converter-go/pkg/converter/v2",
+    "github.com/asyncapi/converter-go/pkg/decode",
+    "github.com/asyncapi/converter-go/pkg/encode",
     "github.com/asyncapi/parser/pkg",
     "github.com/golang/lint/golint",
     "github.com/onsi/gomega",
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
     "github.com/vrischmann/envconfig",
+    "golang.org/x/net/context",
     "golang.org/x/tools/cmd/goimports",
   ]
   solver-name = "gps-cdcl"

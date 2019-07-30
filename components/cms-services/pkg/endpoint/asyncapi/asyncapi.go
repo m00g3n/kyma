@@ -9,7 +9,7 @@ import (
 var AddToServiceFuncs []func(service.Service) error
 
 func init() {
-	AddToServiceFuncs = append(AddToServiceFuncs, v1.AddValidation)
+	AddToServiceFuncs = append(AddToServiceFuncs, v1.AddValidation, v1.AddConversion)
 }
 
 // AddToService registers endpoints in service
