@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+
+	"github.com/pkg/errors"
 
 	"github.com/kyma-project/kyma/components/cms-services/pkg/runtime/service"
 	log "github.com/sirupsen/logrus"

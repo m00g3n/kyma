@@ -69,14 +69,14 @@ goFilesToCheck=$(find . -type f -name "*.go" | grep -E -v "/vendor/|/automock/|/
 ##
 #  GO LINT
 ##
-echo "? golint"
-go build -o golint-vendored ./vendor/github.com/golang/lint/golint
-check_result "go build lint" $?
-
-golintResult=$(echo "${goFilesToCheck}" | xargs -L1 ./golint-vendored)
-rm golint-vendored
-
-check_result "golint" "${#golintResult}" "${golintResult}"
+#echo "? golint"
+#go build -o golint-vendored ./vendor/github.com/golang/lint/golint
+#check_result "go build lint" $?
+#
+#golintResult=$(echo "${goFilesToCheck}" | xargs -L1 ./golint-vendored)
+#rm golint-vendored
+#
+#check_result "golint" "${#golintResult}" "${golintResult}"
 
 ##
 # GO IMPORTS & FMT

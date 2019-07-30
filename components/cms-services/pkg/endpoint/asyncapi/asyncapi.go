@@ -1,7 +1,7 @@
 package asyncapi
 
 import (
-	"github.com/kyma-project/kyma/components/cms-services/pkg/endpoint/asyncapi/v1"
+	v1 "github.com/kyma-project/kyma/components/cms-services/pkg/endpoint/asyncapi/v1"
 	"github.com/kyma-project/kyma/components/cms-services/pkg/runtime/service"
 )
 

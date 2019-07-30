@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/asyncapi/parser/pkg"
+	parser "github.com/asyncapi/parser/pkg"
 	"github.com/kyma-project/kyma/components/cms-services/pkg/runtime/endpoint"
 	"github.com/kyma-project/kyma/components/cms-services/pkg/runtime/service"
 	"github.com/pkg/errors"

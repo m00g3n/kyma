@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Config struct {

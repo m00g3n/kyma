@@ -215,13 +215,21 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a45ec3bb7c73e52430410dff3e0a5534ce518f72a8eb4355bc8502c546b91ecc"
+  digest = "1:fa3cda06d7e2703412e10ae83b48550663d695f34d74951a3d1a36a33b093994"
   name = "golang.org/x/tools"
   packages = [
+    "cmd/goimports",
     "go/ast/astutil",
     "go/gcexportdata",
     "go/internal/gcimporter",
+    "go/internal/packagesdriver",
+    "go/packages",
     "go/types/typeutil",
+    "internal/fastwalk",
+    "internal/gopathwalk",
+    "internal/imports",
+    "internal/module",
+    "internal/semver",
   ]
   pruneopts = "UT"
   revision = "2e34cfcb95cb3d24b197d58fe6d25046b8f25c86"
@@ -245,6 +253,7 @@
     "github.com/sirupsen/logrus",
     "github.com/stretchr/testify/mock",
     "github.com/vrischmann/envconfig",
+    "golang.org/x/tools/cmd/goimports",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

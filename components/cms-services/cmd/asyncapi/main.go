@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/kyma-project/kyma/components/cms-services/pkg/runtime/signal"
 	"github.com/vrischmann/envconfig"
-	"net/http"
 
 	"github.com/kyma-project/kyma/components/cms-services/pkg/endpoint/asyncapi"
 	logpkg "github.com/kyma-project/kyma/components/cms-services/pkg/runtime/log"

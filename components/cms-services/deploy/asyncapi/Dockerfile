@@ -4,7 +4,7 @@ LABEL source = git@github.com:kyma-project/kyma.git
 
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
-COPY ./bin/licenses /app/licenses
+COPY ./licenses /app/licenses
 COPY ./bin/asyncapi /app/asyncapi
 
 CMD ["/app/asyncapi"]
