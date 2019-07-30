@@ -24,8 +24,8 @@ data:
       "validations":[
         {
           "name": "cms-cms-asyncapi-service",
-              "namespace": "kyma-system",
-              "endpoint": "/v1/validate"
+          "namespace": "kyma-system",
+          "endpoint": "/v1/validate"
         }
       ]
     }
