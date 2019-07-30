@@ -4,3 +4,9 @@ global:
   cms_controller_manager:
     dir: pr/
     version: 'PR-4713'
+  cms_asyncapi_service:
+    dir: pr/
+    version: 'PR-5093'
+
+cms-asyncapi-service:
+  enabled: false
