@@ -1,4 +1,3 @@
-{{- if .Values.enabled }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -33,4 +32,3 @@ spec:
               value: "{{ .Values.service.internalPort }}"
             - name: APP_SERVICE_HOST
               value: "0.0.0.0"
-{{- end }}
