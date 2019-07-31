@@ -18,7 +18,7 @@ data:
           }
       ]
     }
-{{- if .Values.global.cms_asyncapi_service.enabled }}
+{{- if .Values.global.cmsAsyncAPIService.enabled }}
   asyncapi: |-
     {
       "validations":[

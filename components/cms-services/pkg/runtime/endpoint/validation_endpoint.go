@@ -17,7 +17,7 @@ type validationEndpoint struct {
 
 // Validator is the interface implemented by objects that can validate an request
 type Validator interface {
-	Validate(ctx context.Context, reader io.Reader, metadata string) error
+	Validate(ctx context.Context, reader io.Reader, parameters string) error
 }
 
 var _ service.HTTPEndpoint = &validationEndpoint{}
@@ -59,9 +59,9 @@ func (e *validationEndpoint) Handle(writer http.ResponseWriter, request *http.Re
 	}
 	defer content.Close()
 
-	metadata := request.FormValue("metadata")
+	parameters := request.FormValue("parameters")
 
-	if err := e.validator.Validate(request.Context(), content, metadata); err != nil {
+	if err := e.validator.Validate(request.Context(), content, parameters); err != nil {
 		log.Error(errors.Wrap(err, "while validating request"))
 		http.Error(writer, err.Error(), http.StatusUnprocessableEntity)
 		return

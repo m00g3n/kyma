@@ -31,7 +31,7 @@ func NewService() *Service {
 }
 
 // RequestBodyFromFile builds multipart request from file
-func RequestBodyFromFile(filePath, metadata string) (io.Reader, string, error) {
+func RequestBodyFromFile(filePath, parameters string) (io.Reader, string, error) {
 	buffer := &bytes.Buffer{}
 	formWriter := multipart.NewWriter(buffer)
 	defer formWriter.Close()
@@ -54,10 +54,10 @@ func RequestBodyFromFile(filePath, metadata string) (io.Reader, string, error) {
 		}
 	}
 
-	if metadata != "" {
-		err := formWriter.WriteField("metadata", metadata)
+	if parameters != "" {
+		err := formWriter.WriteField("parameters", parameters)
 		if err != nil {
-			return nil, "", errors.Wrapf(err, "while creating metadata field for metadata %s", metadata)
+			return nil, "", errors.Wrapf(err, "while creating parameters field for parameters %s", parameters)
 		}
 	}
 	return buffer, formWriter.FormDataContentType(), nil

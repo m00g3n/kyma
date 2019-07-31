@@ -2,4 +2,4 @@ dependencies:
 - name: cms-controller-manager
   condition: cms-controller-manager.enabled
 - name: cms-asyncapi-service
-  condition: global.cms_asyncapi_service.enabled
+  condition: global.cmsAsyncAPIService.enabled

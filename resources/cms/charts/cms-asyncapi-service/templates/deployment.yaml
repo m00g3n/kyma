@@ -23,7 +23,7 @@ spec:
           maxUnavailable: 0
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.global.containerRegistry.path }}/{{ .Values.global.cms_asyncapi_service.dir }}{{ .Values.image.name }}:{{ .Values.global.cms_asyncapi_service.version }}"
+          image: "{{ .Values.global.containerRegistry.path }}/{{ .Values.global.cmsAsyncAPIService.dir }}{{ .Values.image.name }}:{{ .Values.global.cmsAsyncAPIService.version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: APP_VERBOSE

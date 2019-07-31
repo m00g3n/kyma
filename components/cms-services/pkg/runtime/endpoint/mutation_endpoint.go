@@ -17,7 +17,7 @@ type mutationEndpoint struct {
 
 // Mutator is the interface implemented by objects that can mutate objects
 type Mutator interface {
-	Mutate(ctx context.Context, reader io.Reader, metadata string) ([]byte, error)
+	Mutate(ctx context.Context, reader io.Reader, parameters string) ([]byte, error)
 }
 
 var _ service.HTTPEndpoint = &mutationEndpoint{}
@@ -59,9 +59,9 @@ func (e *mutationEndpoint) Handle(writer http.ResponseWriter, request *http.Requ
 	}
 	defer content.Close()
 
-	metadata := request.FormValue("metadata")
+	parameters := request.FormValue("parameters")
 
-	result, err := e.mutator.Mutate(request.Context(), content, metadata)
+	result, err := e.mutator.Mutate(request.Context(), content, parameters)
 	if err != nil {
 		log.Error(errors.Wrap(err, "while mutating request"))
 		http.Error(writer, err.Error(), http.StatusUnprocessableEntity)

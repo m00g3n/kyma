@@ -20,8 +20,8 @@ paths:
             schema:
               type: object
               properties:
-                metadata:
-                  description: Additional metadata
+                parameters:
+                  description: Additional parameters for service
                   type: string
                 content:
                   description: File to validate

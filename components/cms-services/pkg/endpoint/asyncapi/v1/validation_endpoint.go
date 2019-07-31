@@ -24,7 +24,7 @@ var _ endpoint.Validator = &validator{}
 
 type validator struct{}
 
-func (v *validator) Validate(ctx context.Context, reader io.Reader, metadata string) error {
+func (v *validator) Validate(ctx context.Context, reader io.Reader, parameters string) error {
 	document := v.streamToByte(reader)
 	_, err := parser.Parse(document, false)
 	if err != nil && len(err.ParsingErrors) > 0 {
