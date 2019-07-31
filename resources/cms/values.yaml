@@ -7,4 +7,4 @@ global:
   cms_asyncapi_service:
     dir: pr/
     version: 'PR-5093'
-    enabled: false
+    enabled: true

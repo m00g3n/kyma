@@ -1,6 +1,7 @@
 package endpoint_test
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io"
@@ -13,19 +14,22 @@ import (
 	"github.com/onsi/gomega"
 )
 
-func TestValidationEndpoint_Handle(t *testing.T) {
+func TestMutationEndpoint_Handle(t *testing.T) {
+	message := "test response"
+
 	for testName, testCase := range map[string]struct {
 		targetMethod   string
 		expectedStatus int
 		filePath       string
 		metadata       string
-		validator      endpoint.Validator
+		mutator        endpoint.Mutator
+		response       string
 	}{
 		"OK": {
 			expectedStatus: http.StatusOK,
 			targetMethod:   http.MethodPost,
-			filePath:       "./validation_endpoint.go",
-			validator:      &fakeValidator{fail: false},
+			filePath:       "./mutation_endpoint.go",
+			mutator:        &fakeMutator{fail: false, message: message},
 		},
 		"invalid method": {
 			expectedStatus: http.StatusMethodNotAllowed,
@@ -44,13 +48,13 @@ func TestValidationEndpoint_Handle(t *testing.T) {
 			expectedStatus: http.StatusUnprocessableEntity,
 			targetMethod:   http.MethodPost,
 			filePath:       "./validation_endpoint.go",
-			validator:      &fakeValidator{fail: true},
+			mutator:        &fakeMutator{fail: true},
 		},
 	} {
 		t.Run(testName, func(t *testing.T) {
 			// given
 			g := gomega.NewWithT(t)
-			edp := endpoint.NewValidation("test", testCase.validator)
+			edp := endpoint.NewMutation("test", testCase.mutator)
 			body, contentType, err := fake.RequestBodyFromFile(testCase.filePath, testCase.metadata)
 			g.Expect(err).ToNot(gomega.HaveOccurred())
 
@@ -64,11 +68,17 @@ func TestValidationEndpoint_Handle(t *testing.T) {
 
 			// then
 			g.Expect(recorder.Result().StatusCode).To(gomega.Equal(testCase.expectedStatus))
+			if recorder.Result().StatusCode == http.StatusOK {
+				buffer := new(bytes.Buffer)
+				buffer.ReadFrom(recorder.Result().Body)
+
+				g.Expect(buffer.String()).To(gomega.Equal(message))
+			}
 		})
 	}
 }
 
-func TestValidationEndpoint_Handle_NoMultipartRequest(t *testing.T) {
+func TestMutationEndpoint_Handle_NoMultipartRequest(t *testing.T) {
 	// given
 	g := gomega.NewWithT(t)
 	edp := endpoint.NewValidation("test", nil)
@@ -84,16 +94,17 @@ func TestValidationEndpoint_Handle_NoMultipartRequest(t *testing.T) {
 	g.Expect(recorder.Result().StatusCode).To(gomega.Equal(http.StatusBadRequest))
 }
 
-var _ endpoint.Validator = &fakeValidator{}
+var _ endpoint.Mutator = &fakeMutator{}
 
-type fakeValidator struct {
-	fail bool
+type fakeMutator struct {
+	fail    bool
+	message string
 }
 
-func (v *fakeValidator) Validate(ctx context.Context, reader io.Reader, metadata string) error {
-	if v.fail {
-		return errors.New("fail")
+func (m *fakeMutator) Mutate(ctx context.Context, reader io.Reader, metadata string) ([]byte, error) {
+	if m.fail {
+		return nil, errors.New("fail")
 	}
 
-	return nil
+	return []byte(m.message), nil
 }

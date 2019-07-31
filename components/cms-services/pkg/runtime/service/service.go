@@ -8,32 +8,34 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Config is used to customise service configuration
 type Config struct {
 	Host string `envconfig:"default=127.0.0.1"`
 	Port int    `envconfig:"default=3000"`
 }
 
-//go:generate mockery -name=Service -output=automock -outpkg=automock -case=underscore
+// Service is the interface implemented by Asset Store services
 type Service interface {
-	Register(endpoint HttpEndpoint)
+	Register(endpoint HTTPEndpoint)
 	Start(ctx context.Context) error
 }
 
-//go:generate mockery -name=HttpEndpoint -output=automock -outpkg=automock -case=underscore
-type HttpEndpoint interface {
+// HTTPEndpoint is the interface implemented by Asset Store endpoints
+type HTTPEndpoint interface {
 	Name() string
 	Handle(writer http.ResponseWriter, request *http.Request)
 }
 
 type service struct {
-	endpoints []HttpEndpoint
+	endpoints []HTTPEndpoint
 	host      string
 	port      int
 }
 
 var _ Service = &service{}
 
-func New(config Config) *service {
+// New is the constructor that creates new Asset Store service
+func New(config Config) Service {
 	return &service{
 		host: config.Host,
 		port: config.Port,
@@ -52,6 +54,7 @@ func (s *service) setupHandlers() *http.ServeMux {
 	return mux
 }
 
+// Start runs service
 func (s *service) Start(ctx context.Context) error {
 	mux := s.setupHandlers()
 
@@ -70,6 +73,7 @@ func (s *service) Start(ctx context.Context) error {
 	return srv.ListenAndServe()
 }
 
-func (s *service) Register(endpoint HttpEndpoint) {
+// Register registers endpoint in service
+func (s *service) Register(endpoint HTTPEndpoint) {
 	s.endpoints = append(s.endpoints, endpoint)
 }

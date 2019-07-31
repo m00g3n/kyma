@@ -8,6 +8,7 @@ func init() {
 	log.SetFormatter(&log.JSONFormatter{})
 }
 
+// Setup configures logger
 func Setup(verbose bool) {
 	if verbose {
 		log.SetLevel(log.InfoLevel)

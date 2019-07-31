@@ -15,24 +15,27 @@ type mutationEndpoint struct {
 	mutator Mutator
 }
 
-//go:generate mockery -name=Mutator -output=automock -outpkg=automock -case=underscore
+// Mutator is the interface implemented by objects that can mutate objects
 type Mutator interface {
-	Mutate(ctx context.Context, contentType string, reader io.Reader, metadata string) ([]byte, error)
+	Mutate(ctx context.Context, reader io.Reader, metadata string) ([]byte, error)
 }
 
-var _ service.HttpEndpoint = &mutationEndpoint{}
+var _ service.HTTPEndpoint = &mutationEndpoint{}
 
-func NewMutation(name string, mutator Mutator) *mutationEndpoint {
+// NewMutation is the constructor that creates new Mutation Endpoint
+func NewMutation(name string, mutator Mutator) service.HTTPEndpoint {
 	return &mutationEndpoint{
 		name:    name,
 		mutator: mutator,
 	}
 }
 
+// Name returns name of the endpoint
 func (e *mutationEndpoint) Name() string {
 	return e.name
 }
 
+// Handle process an HTTP request and calls mutator
 func (e *mutationEndpoint) Handle(writer http.ResponseWriter, request *http.Request) {
 	defer request.Body.Close()
 
@@ -48,7 +51,7 @@ func (e *mutationEndpoint) Handle(writer http.ResponseWriter, request *http.Requ
 	}
 	defer request.MultipartForm.RemoveAll()
 
-	content, header, err := request.FormFile("content")
+	content, _, err := request.FormFile("content")
 	if err != nil {
 		log.Error(errors.Wrap(err, "while accessing content"))
 		http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -58,7 +61,7 @@ func (e *mutationEndpoint) Handle(writer http.ResponseWriter, request *http.Requ
 
 	metadata := request.FormValue("metadata")
 
-	result, err := e.mutator.Mutate(request.Context(), header.Header.Get("content-type"), content, metadata)
+	result, err := e.mutator.Mutate(request.Context(), content, metadata)
 	if err != nil {
 		log.Error(errors.Wrap(err, "while mutating request"))
 		http.Error(writer, err.Error(), http.StatusUnprocessableEntity)

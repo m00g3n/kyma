@@ -12,18 +12,19 @@ import (
 	"github.com/pkg/errors"
 )
 
+// AddValidation registers endpoint in service
 func AddValidation(srv service.Service) error {
-	validator := &Validator{}
+	validator := &validator{}
 
 	srv.Register(endpoint.NewValidation("v1/validate", validator))
 	return nil
 }
 
-var _ endpoint.Validator = &Validator{}
+var _ endpoint.Validator = &validator{}
 
-type Validator struct{}
+type validator struct{}
 
-func (v *Validator) Validate(ctx context.Context, contentType string, reader io.Reader, metadata string) error {
+func (v *validator) Validate(ctx context.Context, reader io.Reader, metadata string) error {
 	document := v.streamToByte(reader)
 	_, err := parser.Parse(document, false)
 	if err != nil && len(err.ParsingErrors) > 0 {
@@ -42,7 +43,7 @@ func (v *Validator) Validate(ctx context.Context, contentType string, reader io.
 	return nil
 }
 
-func (v *Validator) streamToByte(reader io.Reader) []byte {
+func (v *validator) streamToByte(reader io.Reader) []byte {
 	buffer := new(bytes.Buffer)
 	buffer.ReadFrom(reader)
 

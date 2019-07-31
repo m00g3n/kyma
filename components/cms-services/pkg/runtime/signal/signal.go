@@ -27,7 +27,7 @@ func SetupChannel() (stopCh <-chan struct{}) {
 }
 
 // CancelOnInterrupt calls cancel function when os.Interrupt or SIGTERM is received
-func CancelOnInterrupt(stopCh <-chan struct{}, ctx context.Context, cancel context.CancelFunc) {
+func CancelOnInterrupt(ctx context.Context, cancel context.CancelFunc, stopCh <-chan struct{}) {
 	go func() {
 		select {
 		case <-ctx.Done():

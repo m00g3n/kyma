@@ -13,7 +13,7 @@ import (
 
 func TestService_setupHandlers(t *testing.T) {
 	for testName, testCase := range map[string]struct {
-		endpoints      []service.HttpEndpoint
+		endpoints      []service.HTTPEndpoint
 		targetEndpoint string
 		targetMethod   string
 		expectedStatus int
@@ -24,13 +24,13 @@ func TestService_setupHandlers(t *testing.T) {
 			targetMethod:   http.MethodPost,
 		},
 		"not found": {
-			endpoints:      []service.HttpEndpoint{fixEndpoint("test1", http.StatusOK), fixEndpoint("test2", http.StatusOK), fixEndpoint("test3", http.StatusOK)},
+			endpoints:      []service.HTTPEndpoint{fixEndpoint("test1", http.StatusOK), fixEndpoint("test2", http.StatusOK), fixEndpoint("test3", http.StatusOK)},
 			expectedStatus: http.StatusNotFound,
 			targetEndpoint: "/test",
 			targetMethod:   http.MethodGet,
 		},
 		"OK": {
-			endpoints:      []service.HttpEndpoint{fixEndpoint("test", http.StatusOK), fixEndpoint("test2", http.StatusNotFound), fixEndpoint("test3", http.StatusNotFound)},
+			endpoints:      []service.HTTPEndpoint{fixEndpoint("test", http.StatusOK), fixEndpoint("test2", http.StatusNotFound), fixEndpoint("test3", http.StatusNotFound)},
 			expectedStatus: http.StatusOK,
 			targetEndpoint: "/test",
 			targetMethod:   http.MethodPost,
@@ -39,7 +39,7 @@ func TestService_setupHandlers(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			// given
 			g := gomega.NewWithT(t)
-			srv := service.New(service.Config{})
+			srv := service.NewTestService(service.Config{})
 
 			for _, endpoint := range testCase.endpoints {
 				srv.Register(endpoint)
@@ -60,7 +60,7 @@ func TestService_setupHandlers(t *testing.T) {
 
 func TestService_Start(t *testing.T) {
 	for testName, testCase := range map[string]struct {
-		endpoints      []service.HttpEndpoint
+		endpoints      []service.HTTPEndpoint
 		targetEndpoint string
 		targetMethod   string
 		expectedStatus int
@@ -71,13 +71,13 @@ func TestService_Start(t *testing.T) {
 			targetMethod:   http.MethodPost,
 		},
 		"not found": {
-			endpoints:      []service.HttpEndpoint{fixEndpoint("test1", http.StatusOK), fixEndpoint("test2", http.StatusOK), fixEndpoint("test3", http.StatusOK)},
+			endpoints:      []service.HTTPEndpoint{fixEndpoint("test1", http.StatusOK), fixEndpoint("test2", http.StatusOK), fixEndpoint("test3", http.StatusOK)},
 			expectedStatus: http.StatusNotFound,
 			targetEndpoint: "/test",
 			targetMethod:   http.MethodGet,
 		},
 		"OK": {
-			endpoints:      []service.HttpEndpoint{fixEndpoint("test", http.StatusOK), fixEndpoint("test2", http.StatusNotFound), fixEndpoint("test3", http.StatusNotFound)},
+			endpoints:      []service.HTTPEndpoint{fixEndpoint("test", http.StatusOK), fixEndpoint("test2", http.StatusNotFound), fixEndpoint("test3", http.StatusNotFound)},
 			expectedStatus: http.StatusOK,
 			targetEndpoint: "/test",
 			targetMethod:   http.MethodPost,
@@ -112,7 +112,7 @@ func TestService_Start(t *testing.T) {
 	}
 }
 
-var _ service.HttpEndpoint = &testEndpoint{}
+var _ service.HTTPEndpoint = &testEndpoint{}
 
 type testEndpoint struct {
 	name   string

@@ -15,24 +15,27 @@ type validationEndpoint struct {
 	validator Validator
 }
 
-//go:generate mockery -name=Validator -output=automock -outpkg=automock -case=underscore
+// Validator is the interface implemented by objects that can validate an request
 type Validator interface {
-	Validate(ctx context.Context, contentType string, reader io.Reader, metadata string) error
+	Validate(ctx context.Context, reader io.Reader, metadata string) error
 }
 
-var _ service.HttpEndpoint = &validationEndpoint{}
+var _ service.HTTPEndpoint = &validationEndpoint{}
 
-func NewValidation(name string, validator Validator) *validationEndpoint {
+// NewValidation is the constructor that creates new Validation Endpoint
+func NewValidation(name string, validator Validator) service.HTTPEndpoint {
 	return &validationEndpoint{
 		name:      name,
 		validator: validator,
 	}
 }
 
+// Name returns name of the endpoint
 func (e *validationEndpoint) Name() string {
 	return e.name
 }
 
+// Handle process an HTTP request and calls validator
 func (e *validationEndpoint) Handle(writer http.ResponseWriter, request *http.Request) {
 	defer request.Body.Close()
 
@@ -48,7 +51,7 @@ func (e *validationEndpoint) Handle(writer http.ResponseWriter, request *http.Re
 	}
 	defer request.MultipartForm.RemoveAll()
 
-	content, header, err := request.FormFile("content")
+	content, _, err := request.FormFile("content")
 	if err != nil {
 		log.Error(errors.Wrap(err, "while accessing content"))
 		http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -58,7 +61,7 @@ func (e *validationEndpoint) Handle(writer http.ResponseWriter, request *http.Re
 
 	metadata := request.FormValue("metadata")
 
-	if err := e.validator.Validate(request.Context(), header.Header.Get("Content-Type"), content, metadata); err != nil {
+	if err := e.validator.Validate(request.Context(), content, metadata); err != nil {
 		log.Error(errors.Wrap(err, "while validating request"))
 		http.Error(writer, err.Error(), http.StatusUnprocessableEntity)
 		return

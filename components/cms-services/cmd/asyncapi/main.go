@@ -30,7 +30,7 @@ func main() {
 	stopCh := signal.SetupChannel()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	signal.CancelOnInterrupt(stopCh, ctx, cancel)
+	signal.CancelOnInterrupt(ctx, cancel, stopCh)
 
 	srv := service.New(cfg.Service)
 

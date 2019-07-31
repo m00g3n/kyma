@@ -19,14 +19,6 @@
   revision = "d17813003c2be798d222a728b11cd1620e0e99b2"
 
 [[projects]]
-  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
-  name = "github.com/davecgh/go-spew"
-  packages = ["spew"]
-  pruneopts = "UT"
-  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
-  version = "v1.1.1"
-
-[[projects]]
   digest = "1:2cd7915ab26ede7d95b8749e6b1f933f1c6d5398030684e6505940a10f31cfda"
   name = "github.com/ghodss/yaml"
   packages = ["."]
@@ -99,14 +91,6 @@
   version = "v0.8.1"
 
 [[projects]]
-  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
-  name = "github.com/pmezard/go-difflib"
-  packages = ["difflib"]
-  pruneopts = "UT"
-  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
-  version = "v1.0.0"
-
-[[projects]]
   digest = "1:04457f9f6f3ffc5fea48e71d62f2ca256637dee0a04d710288e27e05c8b41976"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
@@ -121,17 +105,6 @@
   pruneopts = "UT"
   revision = "ea4fe68685ee0d3cee7032121851b57e7494e8ea"
   version = "v0.2.0"
-
-[[projects]]
-  digest = "1:37d98b9a6daa7181c567aa43f7634af021b851ac2d8c926903677972039c5e9c"
-  name = "github.com/stretchr/testify"
-  packages = [
-    "assert",
-    "mock",
-  ]
-  pruneopts = "UT"
-  revision = "b91bfb9ebec76498946beb6af7c0230c7cc7ba6c"
-  version = "v1.2.0"
 
 [[projects]]
   digest = "1:bb32a7e267540d9f2d26753426d5e360c5bd858b9b78e26b9f0c99219024d8f5"
@@ -251,7 +224,6 @@
     "github.com/onsi/gomega",
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
-    "github.com/stretchr/testify/mock",
     "github.com/vrischmann/envconfig",
     "golang.org/x/tools/cmd/goimports",
   ]

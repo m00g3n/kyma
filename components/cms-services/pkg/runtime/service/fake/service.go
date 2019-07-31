@@ -17,43 +17,49 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Service is a fake implementation of Asset Store service
 type Service struct {
-	endpoints []service.HttpEndpoint
+	endpoints []service.HTTPEndpoint
 	mux       *http.ServeMux
 }
 
 var _ service.Service = &Service{}
 
+// NewService is a constructor that creates new fake service
 func NewService() *Service {
 	return &Service{}
 }
 
+// RequestBodyFromFile builds multipart request from file
 func RequestBodyFromFile(filePath, metadata string) (io.Reader, string, error) {
 	buffer := &bytes.Buffer{}
 	formWriter := multipart.NewWriter(buffer)
 	defer formWriter.Close()
 
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, "", errors.Wrapf(err, "while opening file %s", filePath)
-	}
-	defer file.Close()
+	if filePath != "" {
+		file, err := os.Open(filePath)
+		if err != nil {
+			return nil, "", errors.Wrapf(err, "while opening file %s", filePath)
+		}
+		defer file.Close()
 
-	contentWriter, err := formWriter.CreateFormFile("content", filepath.Base(file.Name()))
-	if err != nil {
-		return nil, "", errors.Wrapf(err, "while creating content field for file %s", filePath)
-	}
+		contentWriter, err := formWriter.CreateFormFile("content", filepath.Base(file.Name()))
+		if err != nil {
+			return nil, "", errors.Wrapf(err, "while creating content field for file %s", filePath)
+		}
 
-	_, err = io.Copy(contentWriter, file)
-	if err != nil {
-		return nil, "", errors.Wrapf(err, "while copying file %s to content field", filePath)
-	}
-
-	err = formWriter.WriteField("metadata", metadata)
-	if err != nil {
-		return nil, "", errors.Wrapf(err, "while creating metadata field for metadata %s", metadata)
+		_, err = io.Copy(contentWriter, file)
+		if err != nil {
+			return nil, "", errors.Wrapf(err, "while copying file %s to content field", filePath)
+		}
 	}
 
+	if metadata != "" {
+		err := formWriter.WriteField("metadata", metadata)
+		if err != nil {
+			return nil, "", errors.Wrapf(err, "while creating metadata field for metadata %s", metadata)
+		}
+	}
 	return buffer, formWriter.FormDataContentType(), nil
 }
 
@@ -72,6 +78,7 @@ func (s *Service) ServeHTTP(method, endpoint, contentType string, body io.Reader
 	return recorder.Result()
 }
 
+// Start configure routes in fake service
 func (s *Service) Start(ctx context.Context) error {
 	mux := http.NewServeMux()
 
@@ -85,6 +92,7 @@ func (s *Service) Start(ctx context.Context) error {
 	return nil
 }
 
-func (s *Service) Register(endpoint service.HttpEndpoint) {
+// Register adds endpoints to service
+func (s *Service) Register(endpoint service.HTTPEndpoint) {
 	s.endpoints = append(s.endpoints, endpoint)
 }
