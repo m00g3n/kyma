@@ -224,7 +224,7 @@
 # CMS Controller Manager Component
 /components/cms-controller-manager/ @michal-hudy @m00g3n @aerfio @magicmatatjahu
 
-# Asset Metadata Service
+# CMS Services
 /components/cms-services/ @michal-hudy @m00g3n @aerfio @magicmatatjahu
 
 # Binding usage controller Component
