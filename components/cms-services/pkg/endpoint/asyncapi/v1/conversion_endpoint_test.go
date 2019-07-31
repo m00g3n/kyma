@@ -1,6 +1,7 @@
-package v1
+package v1_test
 
 import (
+	v1 "github.com/kyma-project/kyma/components/cms-services/pkg/endpoint/asyncapi/v1"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"
 
@@ -12,7 +13,7 @@ import (
 	"testing"
 )
 
-var testConvert = Convert(func(reader io.Reader, writer io.Writer) error {
+var testConvert = v1.Convert(func(reader io.Reader, writer io.Writer) error {
 	bytes, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return err
@@ -24,24 +25,24 @@ var testConvert = Convert(func(reader io.Reader, writer io.Writer) error {
 	return nil
 })
 
-var testErr = errors.New("test error")
+var errTest = errors.New("test error")
 
 type failingReader struct{}
 
 func (failingReader) Read(p []byte) (n int, err error) {
-	return 0, testErr
+	return 0, errTest
 }
 
 func TestConvert_Mutate(t *testing.T) {
 	g := NewWithT(t)
 	reader := strings.NewReader("test me plz")
-	bytes, err := testConvert.Mutate(context.TODO(), "", reader, "")
+	bytes, err := testConvert.Mutate(context.TODO(), reader, "")
 	g.Expect(err).NotTo(HaveOccurred())
 	g.Expect(bytes).To(Equal([]byte("test me plz")))
 }
 
 func TestConvert_Mutate_reader_err(t *testing.T) {
 	g := NewWithT(t)
-	_, err := testConvert.Mutate(context.TODO(), "", failingReader{}, "")
+	_, err := testConvert.Mutate(context.TODO(), failingReader{}, "")
 	g.Expect(err).To(HaveOccurred())
 }

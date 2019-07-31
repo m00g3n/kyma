@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	parser "github.com/asyncapi/parser/pkg"
+
 	v1 "github.com/kyma-project/kyma/components/cms-services/pkg/endpoint/asyncapi/v1"
 	"github.com/onsi/gomega"
 )
@@ -40,7 +42,7 @@ func TestValidator_Validate(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			// Given
 			g := gomega.NewWithT(t)
-			validator := v1.NewValidation()
+			validator := v1.Validate(parser.Parse)
 			var reader io.Reader
 			if testCase.filePath != "" {
 				file, err := os.Open(testCase.filePath)

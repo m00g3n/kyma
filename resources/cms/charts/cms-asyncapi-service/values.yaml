@@ -6,6 +6,7 @@ service:
   internalPort: 3000
   externalPort: 80
   protocol: TCP
+  verbose: true
 istio:
   namespace: istio-system
 enabled: true

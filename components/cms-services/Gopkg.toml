@@ -21,8 +21,7 @@ required = [
 
 [[constraint]]
   name = "github.com/asyncapi/converter-go"
-  source = "github.com/m00g3n/converter-go"
-  branch = "imports"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/vrischmann/envconfig"

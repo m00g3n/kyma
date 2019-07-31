@@ -14,11 +14,13 @@ import (
 	"io"
 )
 
+// Convert is a functional mutation handler that converts AsyncAPI specification
 type Convert func(reader io.Reader, writer io.Writer) error
 
 var _ endpoint.Mutator = Convert(nil)
 
-func (c Convert) Mutate(ctx context.Context, contentType string, reader io.Reader, metadata string) ([]byte, error) {
+// Mutate convert AsyncAPI spec from version 1.* to version 2.0.0-rc1
+func (c Convert) Mutate(ctx context.Context, reader io.Reader, metadata string) ([]byte, error) {
 	var b bytes.Buffer
 	writer := bufio.NewWriter(&b)
 	if err := c(reader, writer); err != nil {
@@ -30,6 +32,7 @@ func (c Convert) Mutate(ctx context.Context, contentType string, reader io.Reade
 	return b.Bytes(), nil
 }
 
+// AddConversion registers endpoint in service
 func AddConversion(srv service.Service) error {
 	converter, err := v2.New(decode.FromJSONWithYamlFallback, encode.ToJSON)
 	if err != nil {
