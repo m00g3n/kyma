@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bfb172a34d663403968d39da257e16ae23d39f3bc60d7c05d2e318c7e091eb55"
+  digest = "1:7a1d4ae94ae4407ff4728e34f04067939e2ea3a1cf1ca7beb540f8dcc51dbf39"
   name = "github.com/asyncapi/converter-go"
   packages = [
     "pkg/converter/v2",
@@ -12,7 +12,7 @@
     "pkg/error",
   ]
   pruneopts = "UT"
-  revision = "7924dab1bee30afc580d59b402b1014bfdce2442"
+  revision = "3dc34265d75e879c19fbb9daa160dfce0cbd1c2f"
 
 [[projects]]
   branch = "master"
@@ -244,6 +244,7 @@
     "github.com/asyncapi/converter-go/pkg/converter/v2",
     "github.com/asyncapi/converter-go/pkg/decode",
     "github.com/asyncapi/converter-go/pkg/encode",
+    "github.com/asyncapi/converter-go/pkg/error",
     "github.com/asyncapi/parser/pkg",
     "github.com/asyncapi/parser/pkg/errs",
     "github.com/golang/lint/golint",

@@ -2,6 +2,7 @@ package v1
 
 import (
 	v2 "github.com/asyncapi/converter-go/pkg/converter/v2"
+	asyncapierror "github.com/asyncapi/converter-go/pkg/error"
 
 	"github.com/asyncapi/converter-go/pkg/decode"
 	"github.com/asyncapi/converter-go/pkg/encode"
@@ -23,7 +24,7 @@ var _ endpoint.Mutator = Convert(nil)
 func (c Convert) Mutate(ctx context.Context, reader io.Reader, metadata string) ([]byte, error) {
 	var b bytes.Buffer
 	writer := bufio.NewWriter(&b)
-	if err := c(reader, writer); err != nil {
+	if err := c(reader, writer); err != nil && !asyncapierror.IsDocumentVersionUpToDate(err) {
 		return nil, err
 	}
 	if err := writer.Flush(); err != nil {
