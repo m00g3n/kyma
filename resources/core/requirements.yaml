@@ -9,5 +9,5 @@ dependencies:
     condition: kubeless.enabled
   - name: console-backend-service
     condition: console-backend-service.enabled
-  - name: docs
+  - name: content-ui
     condition: docs.enabled
