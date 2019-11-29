@@ -1,4 +1,4 @@
-name: docs
+domainName: docs
 replicaCount: 1
 image:
   pullPolicy: IfNotPresent

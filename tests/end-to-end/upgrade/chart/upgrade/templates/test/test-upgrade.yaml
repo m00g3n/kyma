@@ -15,7 +15,8 @@ spec:
       restartPolicy: Never
       containers:
       - name: tests
-        image: "{{ .Values.containerRegistry.path }}/{{ .Values.image.dir }}e2e-upgrade-test:{{ .Values.image.version }}"
+        # image: "{{ .Values.containerRegistry.path }}/{{ .Values.image.dir }}e2e-upgrade-test:{{ .Values.image.version }}"
+        image: "eu.gcr.io/kyma-project/e2e-upgrade-test:PR-6476"
         imagePullPolicy: "{{ .Values.image.pullPolicy}}"
         command: 
           - /bin/sh
