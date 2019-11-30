@@ -59,7 +59,7 @@ global:
     version: PR-6279
   console_backend_service_test:
     dir:
-    version: e80dea63
+    version: PR-6474
   cluster_users_integration_tests:
     dir:
     version: 3cf2773d
