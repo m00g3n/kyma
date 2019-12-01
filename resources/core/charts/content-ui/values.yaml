@@ -1,4 +1,4 @@
-name: docs
+name: content-ui
 replicaCount: 1
 image:
   pullPolicy: IfNotPresent
