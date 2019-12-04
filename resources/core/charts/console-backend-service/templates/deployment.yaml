@@ -54,12 +54,12 @@ spec:
           - name: APP_RAFTER_ADDRESS
             valueFrom:
               configMapKeyRef:
-                name: rafter-minio-docs-upload
+                name: rafter-minio-envs
                 key: APP_UPLOAD_ENDPOINT_WITH_PORT
           - name: APP_RAFTER_SECURE
             valueFrom:
               configMapKeyRef:
-                name: rafter-minio-docs-upload
+                name: rafter-minio-envs
                 key: APP_UPLOAD_SECURE
           - name: APP_RAFTER_VERIFY_SSL
             value: "{{ .Values.verifySSL }}"
