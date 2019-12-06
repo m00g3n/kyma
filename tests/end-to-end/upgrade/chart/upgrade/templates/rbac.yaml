@@ -49,15 +49,14 @@ rules:
 - apiGroups: [""]
   resources: ["pods", "pods/log", "pods/status", "secrets", "configmaps"]
   verbs: ["create", "delete", "get", "list"]
-- apiGroups: ["assetstore.kyma-project.io"]
-  resources: ["clusterbuckets", "clusterassets", "buckets", "assets"]
-  verbs: ["create", "delete", "get"]
-- apiGroups: ["cms.kyma-project.io"]
-  resources: ["docstopics", "clusterdocstopics"]
-  verbs: ["create", "delete", "get"]
 - apiGroups: [""]
   resources: ["services", "services/proxy"]
   verbs: ["create", "delete", "get", "list"]
+
+# Rafter
+- apiGroups: ["rafter.kyma-project.io"]
+  resources: ["clusterassetgroups", "assetgroups", "clusterbuckets", "clusterassets", "buckets", "assets"]
+  verbs: ["create", "delete", "get"]
 
 # Kubeless
 - apiGroups: ["kubeless.io"]
@@ -67,7 +66,7 @@ rules:
   resources: ["apis"]
   verbs: ["create", "delete", "get", "list"]
 
-  # MicroFrontend
+# MicroFrontend
 - apiGroups: ["ui.kyma-project.io"]
   resources: ["microfrontends", "clustermicrofrontends"]
   verbs: ["create", "get", "delete", "list"]
