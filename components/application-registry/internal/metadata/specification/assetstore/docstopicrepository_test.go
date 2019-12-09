@@ -9,7 +9,7 @@ import (
 	"github.com/kyma-project/kyma/components/application-registry/internal/apperrors"
 	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/assetstore/docstopic"
 	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/assetstore/mocks"
-	"github.com/kyma-project/kyma/components/cms-controller-manager/pkg/apis/cms/v1alpha1"
+	"github.com/kyma-project/rafter/pkg/apis/rafter/v1beta1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -178,8 +178,8 @@ func TestGetDocsTopic(t *testing.T) {
 	})
 }
 
-func createK8sDocsTopic() v1alpha1.ClusterDocsTopic {
-	return v1alpha1.ClusterDocsTopic{
+func createK8sDocsTopic() v1beta1.ClusterAssetGroup {
+	return v1beta1.ClusterAssetGroup{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "id1",
 			Namespace: "kyma-integration",
@@ -188,14 +188,14 @@ func createK8sDocsTopic() v1alpha1.ClusterDocsTopic {
 			},
 			ResourceVersion: "1",
 		},
-		Spec: v1alpha1.ClusterDocsTopicSpec{
-			CommonDocsTopicSpec: v1alpha1.CommonDocsTopicSpec{
+		Spec: v1beta1.ClusterAssetGroupSpec{
+			CommonAssetGroupSpec: v1beta1.CommonAssetGroupSpec{
 				DisplayName: "Some display name",
 				Description: "Some description",
-				Sources: []v1alpha1.Source{
+				Sources: []v1beta1.Source{
 					{
 						URL:  "www.somestorage.com/api",
-						Mode: v1alpha1.DocsTopicSingle,
+						Mode: v1beta1.AssetGroupSingle,
 						Type: "api",
 					},
 				},
@@ -265,17 +265,17 @@ func createTestDocsTopicEntry() docstopic.Entry {
 }
 
 func createMatcherFunction(docsTopicEntry docstopic.Entry, expectedResourceVersion string) func(*unstructured.Unstructured) bool {
-	findSource := func(sources []v1alpha1.Source, key string) (v1alpha1.Source, bool) {
+	findSource := func(sources []v1beta1.Source, key string) (v1beta1.Source, bool) {
 		for _, source := range sources {
-			if source.Type == key && source.Name == fmt.Sprintf(DocsTopicNameFormat, key, docsTopicEntry.Id) {
+			if string(source.Type) == key && string(source.Name) == fmt.Sprintf(DocsTopicNameFormat, key, docsTopicEntry.Id) {
 				return source, true
 			}
 		}
 
-		return v1alpha1.Source{}, false
+		return v1beta1.Source{}, false
 	}
 
-	checkUrls := func(urls map[string]string, sources []v1alpha1.Source) bool {
+	checkUrls := func(urls map[string]string, sources []v1beta1.Source) bool {
 		if len(urls) != len(sources) {
 			return false
 		}
@@ -291,7 +291,7 @@ func createMatcherFunction(docsTopicEntry docstopic.Entry, expectedResourceVersi
 	}
 
 	return func(u *unstructured.Unstructured) bool {
-		dt := v1alpha1.ClusterDocsTopic{}
+		dt := v1beta1.ClusterAssetGroup{}
 		err := runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, &dt)
 		if err != nil {
 			return false

@@ -27,7 +27,7 @@ import (
 	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification"
 	metauuid "github.com/kyma-project/kyma/components/application-registry/internal/metadata/uuid"
 	istioclient "github.com/kyma-project/kyma/components/application-registry/pkg/client/clientset/versioned"
-	"github.com/kyma-project/kyma/components/cms-controller-manager/pkg/apis/cms/v1alpha1"
+	"github.com/kyma-project/rafter/pkg/apis/rafter/v1beta1"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
@@ -97,9 +97,9 @@ func newServiceDefinitionService(opt *options, nameResolver k8sconsts.NameResolv
 
 func NewSpecificationService(dynamicClient dynamic.Interface, opt *options) specification.Service {
 	groupVersionResource := schema.GroupVersionResource{
-		Version:  v1alpha1.SchemeGroupVersion.Version,
-		Group:    v1alpha1.SchemeGroupVersion.Group,
-		Resource: "clusterdocstopics",
+		Version:  v1beta1.GroupVersion.Version,
+		Group:    v1beta1.GroupVersion.Group,
+		Resource: "clusterassetgroup",
 	}
 	resourceInterface := dynamicClient.Resource(groupVersionResource)
 
