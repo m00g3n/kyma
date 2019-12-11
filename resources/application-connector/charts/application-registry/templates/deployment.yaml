@@ -27,7 +27,8 @@ spec:
     spec:
       containers:
       - name: {{ .Chart.Name }}
-        image: {{ .Values.global.containerRegistry.path }}/{{ .Values.global.application_registry.dir }}application-registry:{{ .Values.global.application_registry.version }}
+        # image: {{ .Values.global.containerRegistry.path }}/{{ .Values.global.application_registry.dir }}application-registry:{{ .Values.global.application_registry.version }}
+        image: eu.gcr.io/kyma-project/application-registry:PR-6596
         imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
         args:
           - "/applicationregistry"
