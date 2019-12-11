@@ -1,9 +1,9 @@
-package assetstore
+package rafter
 
 import (
 	"fmt"
 	"github.com/kyma-project/kyma/components/application-registry/internal/apperrors"
-	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/assetstore/docstopic"
+	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/rafter/clusterassetgroup"
 	"github.com/kyma-project/rafter/pkg/apis/rafter/v1beta1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	DocsTopicModeSingle = "single"
-	DocsTopicNameFormat = "%s-%s"
+	ClusterAssetGroupModeSingle = "single"
+	ClusterAssetGroupNameFormat = "%s-%s"
 )
 
 type ResourceInterface interface {
@@ -24,9 +24,9 @@ type ResourceInterface interface {
 	Update(obj *unstructured.Unstructured, options metav1.UpdateOptions, subresources ...string) (*unstructured.Unstructured, error)
 }
 
-type DocsTopicRepository interface {
-	Get(id string) (docstopic.Entry, apperrors.AppError)
-	Upsert(documentationTopic docstopic.Entry) apperrors.AppError
+type ClusterAssetGroupRepository interface {
+	Get(id string) (clusterassetgroup.Entry, apperrors.AppError)
+	Upsert(documentationTopic clusterassetgroup.Entry) apperrors.AppError
 	Delete(id string) apperrors.AppError
 }
 
@@ -34,40 +34,40 @@ type repository struct {
 	resourceInterface ResourceInterface
 }
 
-func NewDocsTopicRepository(resourceInterface ResourceInterface) DocsTopicRepository {
+func NewClusterAssetGroupRepository(resourceInterface ResourceInterface) ClusterAssetGroupRepository {
 	return repository{
 		resourceInterface: resourceInterface,
 	}
 }
 
-func (r repository) Upsert(docsTopicEntry docstopic.Entry) apperrors.AppError {
-	_, err := r.get(docsTopicEntry.Id)
+func (r repository) Upsert(clusterAssetGroupEntry clusterassetgroup.Entry) apperrors.AppError {
+	_, err := r.get(clusterAssetGroupEntry.Id)
 	if err != nil && err.Code() == apperrors.CodeNotFound {
-		return r.create(toK8sType(docsTopicEntry))
+		return r.create(toK8sType(clusterAssetGroupEntry))
 	}
 
 	if err != nil {
 		return err
 	}
 
-	k8sDocsTopic := toK8sType(docsTopicEntry)
+	k8sClusterAssetGroup := toK8sType(clusterAssetGroupEntry)
 
-	return r.update(docsTopicEntry.Id, k8sDocsTopic)
+	return r.update(clusterAssetGroupEntry.Id, k8sClusterAssetGroup)
 }
 
-func (r repository) Get(id string) (docstopic.Entry, apperrors.AppError) {
-	docsTopic, err := r.get(id)
+func (r repository) Get(id string) (clusterassetgroup.Entry, apperrors.AppError) {
+	clusterAssetGroup, err := r.get(id)
 	if err != nil {
-		return docstopic.Entry{}, err
+		return clusterassetgroup.Entry{}, err
 	}
 
-	return fromK8sType(docsTopic), nil
+	return fromK8sType(clusterAssetGroup), nil
 }
 
 func (r repository) Delete(id string) apperrors.AppError {
 	err := r.resourceInterface.Delete(id, &metav1.DeleteOptions{})
 	if err != nil && !k8serrors.IsNotFound(err) {
-		return apperrors.Internal("Failed to delete DocsTopic: %s.", err)
+		return apperrors.Internal("Failed to delete ClusterAssetGroup: %s.", err)
 	}
 
 	return nil
@@ -83,17 +83,17 @@ func (r repository) get(id string) (v1beta1.ClusterAssetGroup, apperrors.AppErro
 		return v1beta1.ClusterAssetGroup{}, apperrors.Internal("Failed to get Docs Topic, %s.", err)
 	}
 
-	var docsTopic v1beta1.ClusterAssetGroup
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, &docsTopic)
+	var clusterAssetGroup v1beta1.ClusterAssetGroup
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, &clusterAssetGroup)
 	if err != nil {
 		return v1beta1.ClusterAssetGroup{}, apperrors.Internal("Failed to convert from unstructured object, %s.", err)
 	}
 
-	return docsTopic, nil
+	return clusterAssetGroup, nil
 }
 
-func (r repository) create(docsTopic v1beta1.ClusterAssetGroup) apperrors.AppError {
-	u, err := toUstructured(docsTopic)
+func (r repository) create(clusterAssetGroup v1beta1.ClusterAssetGroup) apperrors.AppError {
+	u, err := toUstructured(clusterAssetGroup)
 	if err != nil {
 		return apperrors.Internal("Failed to create Documentation Topic, %s.", err)
 	}
@@ -106,31 +106,31 @@ func (r repository) create(docsTopic v1beta1.ClusterAssetGroup) apperrors.AppErr
 	return nil
 }
 
-func (r repository) update(id string, docsTopic v1beta1.ClusterAssetGroup) apperrors.AppError {
+func (r repository) update(id string, clusterAssetGroup v1beta1.ClusterAssetGroup) apperrors.AppError {
 
-	getRefreshedDocsTopic := func(id string, docsTopic v1beta1.ClusterAssetGroup) (v1beta1.ClusterAssetGroup, error) {
+	getRefreshedClusterAssetGroup := func(id string, clusterAssetGroup v1beta1.ClusterAssetGroup) (v1beta1.ClusterAssetGroup, error) {
 		newUnstructured, err := r.resourceInterface.Get(id, metav1.GetOptions{})
 		if err != nil {
 			return v1beta1.ClusterAssetGroup{}, err
 		}
 
-		newDocsTopic, err := fromUnstructured(newUnstructured)
+		newClusterAssetGroup, err := fromUnstructured(newUnstructured)
 		if err != nil {
 			return v1beta1.ClusterAssetGroup{}, err
 		}
 
-		newDocsTopic.Spec = docsTopic.Spec
+		newClusterAssetGroup.Spec = clusterAssetGroup.Spec
 
-		return newDocsTopic, nil
+		return newClusterAssetGroup, nil
 	}
 
 	err := retry.RetryOnConflict(retry.DefaultBackoff, func() error {
-		newDocsTopic, err := getRefreshedDocsTopic(id, docsTopic)
+		newClusterAssetGroup, err := getRefreshedClusterAssetGroup(id, clusterAssetGroup)
 		if err != nil {
 			return err
 		}
 
-		u, err := toUstructured(newDocsTopic)
+		u, err := toUstructured(newClusterAssetGroup)
 		if err != nil {
 			return err
 		}
@@ -150,8 +150,8 @@ func (r repository) update(id string, docsTopic v1beta1.ClusterAssetGroup) apper
 	return nil
 }
 
-func toUstructured(docsTopic v1beta1.ClusterAssetGroup) (*unstructured.Unstructured, error) {
-	obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&docsTopic)
+func toUstructured(clusterAssetGroup v1beta1.ClusterAssetGroup) (*unstructured.Unstructured, error) {
+	obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&clusterAssetGroup)
 	if err != nil {
 		return nil, err
 	}
@@ -160,22 +160,22 @@ func toUstructured(docsTopic v1beta1.ClusterAssetGroup) (*unstructured.Unstructu
 }
 
 func fromUnstructured(u *unstructured.Unstructured) (v1beta1.ClusterAssetGroup, error) {
-	var docsTopic v1beta1.ClusterAssetGroup
-	err := runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, &docsTopic)
+	var clusterAssetGroup v1beta1.ClusterAssetGroup
+	err := runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, &clusterAssetGroup)
 	if err != nil {
 		return v1beta1.ClusterAssetGroup{}, err
 	}
 
-	return docsTopic, nil
+	return clusterAssetGroup, nil
 }
 
-func toK8sType(docsTopicEntry docstopic.Entry) v1beta1.ClusterAssetGroup {
+func toK8sType(clusterAssetGroup clusterassetgroup.Entry) v1beta1.ClusterAssetGroup {
 	sources := make([]v1beta1.Source, 0, 3)
-	for key, url := range docsTopicEntry.Urls {
+	for key, url := range clusterAssetGroup.Urls {
 		source := v1beta1.Source{
-			Name: v1beta1.AssetGroupSourceName(fmt.Sprintf(DocsTopicNameFormat, key, docsTopicEntry.Id)),
+			Name: v1beta1.AssetGroupSourceName(fmt.Sprintf(ClusterAssetGroupNameFormat, key, clusterAssetGroup.Id)),
 			URL:  url,
-			Mode: DocsTopicModeSingle,
+			Mode: ClusterAssetGroupModeSingle,
 			Type: v1beta1.AssetGroupSourceType(key),
 		}
 		sources = append(sources, source)
@@ -183,13 +183,13 @@ func toK8sType(docsTopicEntry docstopic.Entry) v1beta1.ClusterAssetGroup {
 
 	return v1beta1.ClusterAssetGroup{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "ClusterDocsTopic",
+			Kind:       "ClusterAssetGroup",
 			APIVersion: v1beta1.GroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      docsTopicEntry.Id,
+			Name:      clusterAssetGroup.Id,
 			Namespace: "kyma-integration",
-			Labels:    docsTopicEntry.Labels,
+			Labels:    clusterAssetGroup.Labels,
 		},
 		Spec: v1beta1.ClusterAssetGroupSpec{
 			CommonAssetGroupSpec: v1beta1.CommonAssetGroupSpec{
@@ -200,19 +200,19 @@ func toK8sType(docsTopicEntry docstopic.Entry) v1beta1.ClusterAssetGroup {
 		}}
 }
 
-func fromK8sType(k8sDocsTopic v1beta1.ClusterAssetGroup) docstopic.Entry {
+func fromK8sType(k8sClusterAssetGroup v1beta1.ClusterAssetGroup) clusterassetgroup.Entry {
 	urls := make(map[string]string)
 
-	for _, source := range k8sDocsTopic.Spec.Sources {
+	for _, source := range k8sClusterAssetGroup.Spec.Sources {
 		urls[string(source.Type)] = source.URL
 	}
 
-	return docstopic.Entry{
-		Id:          k8sDocsTopic.Name,
-		Description: k8sDocsTopic.Spec.Description,
-		DisplayName: k8sDocsTopic.Spec.DisplayName,
+	return clusterassetgroup.Entry{
+		Id:          k8sClusterAssetGroup.Name,
+		Description: k8sClusterAssetGroup.Spec.Description,
+		DisplayName: k8sClusterAssetGroup.Spec.DisplayName,
 		Urls:        urls,
-		Labels:      k8sDocsTopic.Labels,
-		Status:      docstopic.StatusType(k8sDocsTopic.Status.Phase),
+		Labels:      k8sClusterAssetGroup.Labels,
+		Status:      clusterassetgroup.StatusType(k8sClusterAssetGroup.Status.Phase),
 	}
 }

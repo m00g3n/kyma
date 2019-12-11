@@ -1,4 +1,4 @@
-package assetstore
+package rafter
 
 import (
 	"errors"
@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/kyma-project/kyma/components/application-registry/internal/apperrors"
-	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/assetstore/docstopic"
-	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/assetstore/mocks"
+	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/rafter/clusterassetgroup"
+	"github.com/kyma-project/kyma/components/application-registry/internal/metadata/specification/rafter/mocks"
 	"github.com/kyma-project/rafter/pkg/apis/rafter/v1beta1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -20,34 +20,34 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func TestUpsertDocsTopic(t *testing.T) {
-	t.Run("Should create DocsTopic", func(t *testing.T) {
+func TestUpsertClusterAssetGroup(t *testing.T) {
+	t.Run("Should create ClusterAssetGroup", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
-		docsTopicEntry := createTestDocsTopicEntry()
+		clusterAssetGroupEntry := createTestClusterAssetGroupEntry()
 
 		resourceInterfaceMock.On("Get", "id1", metav1.GetOptions{}).
 			Return(&unstructured.Unstructured{}, k8serrors.NewNotFound(schema.GroupResource{}, ""))
 
-		resourceInterfaceMock.On("Create", mock.MatchedBy(createMatcherFunction(docsTopicEntry, "")), metav1.CreateOptions{}).
+		resourceInterfaceMock.On("Create", mock.MatchedBy(createMatcherFunction(clusterAssetGroupEntry, "")), metav1.CreateOptions{}).
 			Return(&unstructured.Unstructured{}, nil)
 
 		// when
-		err := repository.Upsert(docsTopicEntry)
+		err := repository.Upsert(clusterAssetGroupEntry)
 
 		// then
 		require.NoError(t, err)
 		resourceInterfaceMock.AssertExpectations(t)
 	})
 
-	t.Run("Should update DocsTopic", func(t *testing.T) {
+	t.Run("Should update ClusterAssetGroup", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
-		dt := createK8sDocsTopic()
+		dt := createK8sClusterAssetGroup()
 
 		object, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&dt)
 		require.NoError(t, err)
@@ -58,11 +58,11 @@ func TestUpsertDocsTopic(t *testing.T) {
 		resourceInterfaceMock.On("Get", "id1", metav1.GetOptions{}).
 			Return(&unstructured.Unstructured{Object: object}, nil)
 
-		docsTopicEntry := createTestDocsTopicEntry()
-		resourceInterfaceMock.On("Update", mock.MatchedBy(createMatcherFunction(docsTopicEntry, "1")), metav1.UpdateOptions{}).Return(&unstructured.Unstructured{}, nil)
+		clusterAssetGroupEntry := createTestClusterAssetGroupEntry()
+		resourceInterfaceMock.On("Update", mock.MatchedBy(createMatcherFunction(clusterAssetGroupEntry, "1")), metav1.UpdateOptions{}).Return(&unstructured.Unstructured{}, nil)
 
 		// when
-		err = repository.Upsert(docsTopicEntry)
+		err = repository.Upsert(clusterAssetGroupEntry)
 
 		// then
 		require.NoError(t, err)
@@ -73,13 +73,13 @@ func TestUpsertDocsTopic(t *testing.T) {
 	t.Run("Should fail if k8s client returned error on Get", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
 		resourceInterfaceMock.On("Get", mock.Anything, metav1.GetOptions{}).
 			Return(&unstructured.Unstructured{}, errors.New("some error"))
 
 		// when
-		err := repository.Upsert(createTestDocsTopicEntry())
+		err := repository.Upsert(createTestClusterAssetGroupEntry())
 
 		// then
 		require.Error(t, err)
@@ -89,7 +89,7 @@ func TestUpsertDocsTopic(t *testing.T) {
 	t.Run("Should fail if k8s client returned error on Create", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
 		resourceInterfaceMock.On("Get", "id1", metav1.GetOptions{}).
 			Return(&unstructured.Unstructured{}, k8serrors.NewNotFound(schema.GroupResource{}, ""))
@@ -97,7 +97,7 @@ func TestUpsertDocsTopic(t *testing.T) {
 			Return(&unstructured.Unstructured{}, errors.New("some error"))
 
 		// when
-		err := repository.Upsert(createTestDocsTopicEntry())
+		err := repository.Upsert(createTestClusterAssetGroupEntry())
 
 		// then
 		require.Error(t, err)
@@ -107,9 +107,9 @@ func TestUpsertDocsTopic(t *testing.T) {
 	t.Run("Should fail if k8s client returned error on Update", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
-		dt := createK8sDocsTopic()
+		dt := createK8sClusterAssetGroup()
 		object, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&dt)
 		require.NoError(t, err)
 
@@ -122,7 +122,7 @@ func TestUpsertDocsTopic(t *testing.T) {
 		resourceInterfaceMock.On("Update", mock.Anything, metav1.UpdateOptions{}).Return(&unstructured.Unstructured{}, errors.New("some error"))
 
 		// when
-		err = repository.Upsert(createTestDocsTopicEntry())
+		err = repository.Upsert(createTestClusterAssetGroupEntry())
 
 		// then
 		require.Error(t, err)
@@ -132,13 +132,13 @@ func TestUpsertDocsTopic(t *testing.T) {
 	})
 }
 
-func TestGetDocsTopic(t *testing.T) {
-	t.Run("Should get DocsTopic", func(t *testing.T) {
+func TestGetClusterAssetGroup(t *testing.T) {
+	t.Run("Should get ClusterAssetGroup", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 		{
-			dt := createK8sDocsTopic()
+			dt := createK8sClusterAssetGroup()
 
 			object, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&dt)
 			require.NoError(t, err)
@@ -148,23 +148,23 @@ func TestGetDocsTopic(t *testing.T) {
 		}
 
 		// when
-		docsTopic, err := repository.Get("id1")
+		clusterAssetGroup, err := repository.Get("id1")
 		require.NoError(t, err)
 
 		// then
-		assert.Equal(t, "Some display name", docsTopic.DisplayName)
-		assert.Equal(t, "Some description", docsTopic.Description)
-		assert.Equal(t, "id1", docsTopic.Id)
-		assert.Equal(t, len(docsTopic.Urls), 1)
-		assert.Equal(t, docsTopic.Urls["api"], "www.somestorage.com/api")
-		assert.Equal(t, len(docsTopic.Labels), 1)
-		assert.Equal(t, "value", docsTopic.Labels["key"])
+		assert.Equal(t, "Some display name", clusterAssetGroup.DisplayName)
+		assert.Equal(t, "Some description", clusterAssetGroup.Description)
+		assert.Equal(t, "id1", clusterAssetGroup.Id)
+		assert.Equal(t, len(clusterAssetGroup.Urls), 1)
+		assert.Equal(t, clusterAssetGroup.Urls["api"], "www.somestorage.com/api")
+		assert.Equal(t, len(clusterAssetGroup.Labels), 1)
+		assert.Equal(t, "value", clusterAssetGroup.Labels["key"])
 	})
 
-	t.Run("Should fail with Not Found if DocsTopic doesn't exist", func(t *testing.T) {
+	t.Run("Should fail with Not Found if ClusterAssetGroup doesn't exist", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
 		resourceInterfaceMock.On("Get", mock.Anything, metav1.GetOptions{}).
 			Return(&unstructured.Unstructured{}, k8serrors.NewNotFound(schema.GroupResource{}, ""))
@@ -178,7 +178,7 @@ func TestGetDocsTopic(t *testing.T) {
 	})
 }
 
-func createK8sDocsTopic() v1beta1.ClusterAssetGroup {
+func createK8sClusterAssetGroup() v1beta1.ClusterAssetGroup {
 	return v1beta1.ClusterAssetGroup{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "id1",
@@ -203,11 +203,11 @@ func createK8sDocsTopic() v1beta1.ClusterAssetGroup {
 		}}
 }
 
-func TestDeleteDocsTopic(t *testing.T) {
-	t.Run("Should delete DocsTopic", func(t *testing.T) {
+func TestDeleteClusterAssetGroup(t *testing.T) {
+	t.Run("Should delete ClusterAssetGroup", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
 		resourceInterfaceMock.On("Delete", "id1", &metav1.DeleteOptions{}).Return(nil)
 
@@ -222,7 +222,7 @@ func TestDeleteDocsTopic(t *testing.T) {
 	t.Run("Should fail if k8s client returned error", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
 		resourceInterfaceMock.On("Delete", "id1", &metav1.DeleteOptions{}).Return(errors.New("some error"))
 
@@ -237,7 +237,7 @@ func TestDeleteDocsTopic(t *testing.T) {
 	t.Run("Should not fail if Docs Topic doesn't exist", func(t *testing.T) {
 		// given
 		resourceInterfaceMock := &mocks.ResourceInterface{}
-		repository := NewDocsTopicRepository(resourceInterfaceMock)
+		repository := NewClusterAssetGroupRepository(resourceInterfaceMock)
 
 		resourceInterfaceMock.On("Delete", "id1", &metav1.DeleteOptions{}).Return(k8serrors.NewNotFound(schema.GroupResource{}, ""))
 
@@ -250,13 +250,13 @@ func TestDeleteDocsTopic(t *testing.T) {
 	})
 }
 
-func createTestDocsTopicEntry() docstopic.Entry {
-	return docstopic.Entry{
+func createTestClusterAssetGroupEntry() clusterassetgroup.Entry {
+	return clusterassetgroup.Entry{
 		Id:          "id1",
 		DisplayName: "Some display name",
 		Description: "Some description",
 		Urls: map[string]string{
-			docstopic.KeyOpenApiSpec: "www.somestorage.com/api",
+			clusterassetgroup.KeyOpenApiSpec: "www.somestorage.com/api",
 		},
 		Labels: map[string]string{
 			"key": "value",
@@ -264,10 +264,10 @@ func createTestDocsTopicEntry() docstopic.Entry {
 	}
 }
 
-func createMatcherFunction(docsTopicEntry docstopic.Entry, expectedResourceVersion string) func(*unstructured.Unstructured) bool {
+func createMatcherFunction(clusterAssetGroupEntry clusterassetgroup.Entry, expectedResourceVersion string) func(*unstructured.Unstructured) bool {
 	findSource := func(sources []v1beta1.Source, key string) (v1beta1.Source, bool) {
 		for _, source := range sources {
-			if string(source.Type) == key && string(source.Name) == fmt.Sprintf(DocsTopicNameFormat, key, docsTopicEntry.Id) {
+			if string(source.Type) == key && string(source.Name) == fmt.Sprintf(ClusterAssetGroupNameFormat, key, clusterAssetGroupEntry.Id) {
 				return source, true
 			}
 		}
@@ -298,13 +298,13 @@ func createMatcherFunction(docsTopicEntry docstopic.Entry, expectedResourceVersi
 		}
 
 		resourceVersionMatch := dt.ResourceVersion == expectedResourceVersion
-		objectMetadataMatch := dt.Name == docsTopicEntry.Id
+		objectMetadataMatch := dt.Name == clusterAssetGroupEntry.Id
 
-		specBasicDataMatch := dt.Spec.DisplayName == docsTopicEntry.DisplayName &&
-			dt.Spec.Description == docsTopicEntry.Description
+		specBasicDataMatch := dt.Spec.DisplayName == clusterAssetGroupEntry.DisplayName &&
+			dt.Spec.Description == clusterAssetGroupEntry.Description
 
-		urlsMatch := checkUrls(docsTopicEntry.Urls, dt.Spec.Sources)
-		labelsMatch := reflect.DeepEqual(dt.Labels, docsTopicEntry.Labels)
+		urlsMatch := checkUrls(clusterAssetGroupEntry.Urls, dt.Spec.Sources)
+		labelsMatch := reflect.DeepEqual(dt.Labels, clusterAssetGroupEntry.Labels)
 
 		return resourceVersionMatch && objectMetadataMatch &&
 			specBasicDataMatch && urlsMatch && labelsMatch
