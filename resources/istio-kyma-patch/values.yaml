@@ -1,11 +1,8 @@
 global:
   isLocalEnv: false
   containerRegistry:
-    path: eu.gcr.io/kyma-project
-  istio_webhook:
-    dir: develop/
-    version: 84219cbc
+    path: eu.gcr.io/sap-se-cx-kyma-wookiee
   istio_kyma_patch:
     dir:
-    version: b2a53769
+    version: k16
   required_istio_version: 1.3.5
