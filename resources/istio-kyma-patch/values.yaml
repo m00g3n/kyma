@@ -5,4 +5,4 @@ global:
   istio_kyma_patch:
     dir:
     version: k16
-  required_istio_version: 1.3.5
+  required_istio_version: 1.4.2
