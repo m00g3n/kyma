@@ -50,7 +50,7 @@ rules:
   - patch
   - watch
 - apiGroups:
-  - extensions
+  - apps
   resources:
   - deployments
   verbs:
