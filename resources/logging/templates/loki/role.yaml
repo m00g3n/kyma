@@ -10,7 +10,7 @@ metadata:
     heritage: {{ .Release.Service }}
 {{- if .Values.rbac.pspEnabled }}
 rules:
-- apiGroups:      ['policy']
+- apiGroups:      ['extensions']
   resources:      ['podsecuritypolicies']
   verbs:          ['use']
   resourceNames:  [{{ template "loki.fullname" . }}]

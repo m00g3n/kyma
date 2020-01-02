@@ -7,7 +7,7 @@ metadata:
     app: {{ template "prometheus-operator.name" . }}-alertmanager
 {{ include "prometheus-operator.labels" . | indent 4 }}
 rules:
-- apiGroups: ['policy']
+- apiGroups: ['extensions']
   resources: ['podsecuritypolicies']
   verbs:     ['use']
   resourceNames:

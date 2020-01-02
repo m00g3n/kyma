@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/instance: {{ $.Release.Name }}
   name: psp-{{ template "kube-state-metrics.fullname" . }}
 rules:
-- apiGroups: ['policy']
+- apiGroups: ['extensions']
   resources: ['podsecuritypolicies']
   verbs:     ['use']
   resourceNames:
