@@ -14,6 +14,7 @@ spec:
   selector:
     matchLabels:
       app: {{ template "nginx-ingress.name" . }}
+      component: "{{ .Values.controller.name }}"
       release: {{ .Release.Name }}
   replicas: {{ .Values.controller.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
