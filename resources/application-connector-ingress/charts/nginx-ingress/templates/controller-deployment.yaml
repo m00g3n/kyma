@@ -11,6 +11,10 @@ metadata:
   name: {{ template "nginx-ingress.controller.fullname" . }}
   namespace: {{ .Values.global.nginx.namespace }}
 spec:
+  selector:
+    matchLabels:
+      app: {{ template "nginx-ingress.name" . }}
+      release: {{ .Release.Name }}
   replicas: {{ .Values.controller.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   strategy:
