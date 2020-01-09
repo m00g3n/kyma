@@ -81,6 +81,8 @@ spec:
         resources:
 {{ toYaml .Values.ctrl.resources | indent 10 }}
         env:
+          - name: APP_UPLOAD_SERVICE_URL
+            value: "http://rafter-upload-service.kyma-system.svc.cluster.local:80"
           - name: APP_TMP_DIR
             value: /tmp
           - name: APP_STATUS_PORT
