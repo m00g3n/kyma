@@ -35,7 +35,7 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         # image: "{{ .Values.global.containerRegistry.path }}/{{ .Values.image.name }}:{{ .Values.global.console_backend_service.version }}"
-        image: eu.gcr.io/sap-se-cx-kyma-wookiee/console-backend-service:kubernetes-1.16.3
+        image: "eu.gcr.io/kyma-project/console-backend-service:PR-6799"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
           - name: APP_PORT
